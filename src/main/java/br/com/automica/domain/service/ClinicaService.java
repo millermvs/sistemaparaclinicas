@@ -32,7 +32,7 @@ public class ClinicaService {
 		var response = new CadastrarClinicaResponseDto();
 		response.setIdClinica(clinicaNova.getIdClinica());
 		response.setNomeClinica(clinicaNova.getNomeClinica());
-		response.setCnpjClinica(request.getCnpjClinica());
+		response.setCnpjClinica(clinicaNova.getCnpjClinica());
 		response.setResposta("Clínica foi cadastrada no sistema.");
 		return response;
 	}

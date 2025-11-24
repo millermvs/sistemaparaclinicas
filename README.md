@@ -1,4 +1,4 @@
-# 🏥 Sistema para Clínicas – Modelagem de Agendamento de Consultas
+# 🏥 Sistema para Clínicas – Agendamento de Consultas
 
 Projeto focado em **modelagem de banco de dados** para um sistema simples de **agendamento de consultas médicas**.
 

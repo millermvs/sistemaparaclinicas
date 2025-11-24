@@ -2,40 +2,33 @@ package br.com.automica.domain.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "medicos")
-public class Medico {
+@Table(name = "pacientes")
+public class Paciente {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Long idMedico;
+	private Long idPaciente;
 	
 	@Column(nullable = false, length = 100)
-	private String nomeMedico;
+	private String nomePaciente;
 	
 	@Column(nullable = false, length = 11, unique = true)
-	private String cpfMedico;
+	private String cpfPaciente;
 	
-	@Column(nullable = false, length = 20, unique = true)
-	private String crmMedico;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_clinica", referencedColumnName = "idClinica")
-	private Clinica clinica;
+	@Column(nullable = false, length = 13)
+	private String whatsAppPaciente;
 }
