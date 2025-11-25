@@ -113,8 +113,6 @@ Isso permite responder perguntas como:
 
 ## 🚀 Próximos Passos (ideias de evolução)
 
-- Criar scripts SQL de criação das tabelas (DDL).
-- Popular o banco com dados de exemplo (DML).
 - Implementar uma API REST em **Java + Spring Boot** para:
   - Cadastrar pacientes, médicos e consultas.
   - Listar agenda de um médico por dia.

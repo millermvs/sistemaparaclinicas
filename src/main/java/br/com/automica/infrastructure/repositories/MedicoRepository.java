@@ -12,6 +12,9 @@ import br.com.automica.domain.entities.Medico;
 public interface MedicoRepository extends JpaRepository<Medico, Long>{
 	
 	@EntityGraph(attributePaths = "clinica")
-	Optional<Medico> findByCpfMedico(String cpfmedico);
+	Optional<Medico> findByCpfMedico(String cpfMedico);
+	
+	@EntityGraph(attributePaths = "clinica")
+	Optional<Medico> findByCrmMedico(String crmMedico);
 
 }

@@ -27,13 +27,18 @@ public class MedicoService {
 		var clinicaFound = clinicaRepository.findByIdClinica(request.getIdClinica())
 				.orElseThrow(NaoEncontradoException::new);
 
-		var medicoFound = medicoRepository.findByCpfMedico(request.getCpfMedico());
-			if (medicoFound.isPresent())
-				throw new JaCadastradoException();
+		var cpfMedicoFound = medicoRepository.findByCpfMedico(request.getCpfMedico());
+			if (cpfMedicoFound.isPresent())
+				throw new JaCadastradoException("CPF já cadastrado no sitema.");
 
+		var crmMedicoFound = medicoRepository.findByCrmMedico(request.getCrmMedico());
+			if (crmMedicoFound.isPresent())
+				throw new JaCadastradoException("CRM já cadastrado no sitema.");		
+			
 		var novoMedico = new Medico();
 		novoMedico.setNomeMedico(request.getNomeMedico());
 		novoMedico.setCpfMedico(request.getCpfMedico());
+		novoMedico.setCrmMedico(request.getCrmMedico());
 		clinicaFound.getMedicos().add(novoMedico);
 		novoMedico.setClinica(clinicaFound);
 		medicoRepository.save(novoMedico);

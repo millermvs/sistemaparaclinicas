@@ -3,10 +3,13 @@ package br.com.automica.domain.exceptions;
 public class NaoEncontradoException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
+
+	public NaoEncontradoException() {
+		super("Não encontrado.");
+	}
 	
-	@Override
-	public String getMessage() {
-		return "Não encontrado.";
+	public NaoEncontradoException (String mensagem) {
+		super(mensagem);
 	}
 
 }
