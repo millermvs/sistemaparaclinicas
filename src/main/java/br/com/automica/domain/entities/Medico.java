@@ -39,6 +39,9 @@ public class Medico {
 	@Column(nullable = false, length = 20, unique = true)
 	private String crmMedico;
 	
+	@Column(nullable = false, length = 13)
+	private String whatsAppMedico;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_clinica", referencedColumnName = "idClinica")
 	private Clinica clinica;

@@ -12,12 +12,12 @@ public class CadastrarPacienteRequestDto {
 	@NotBlank
 	@Pattern(regexp = "^[A-Za-zÀ-Üà-ü\\s]{1,100}$", message = "Somente letras e espaços. Min. 1 e Máx. 100 caracteres.")
 	private String nomePaciente;
-	
+
 	@NotBlank
 	@Pattern(regexp = "^[0-9]{11}$", message = "Obrigatório 11 números.")
 	private String cpfPaciente;
-	
+
 	@NotBlank
-	@Pattern(regexp = "^[0-9]{12,13}$", message = "Somente números. Min. 12 e Máx. 13 caracteres.")
+	@Pattern(regexp = "^[0-9]{12,13}$", message = "Somente números. Min. 12 e Máx. 13 caracteres. Ex.: 5521090909090")
 	private String whatsAppPaciente;
 }

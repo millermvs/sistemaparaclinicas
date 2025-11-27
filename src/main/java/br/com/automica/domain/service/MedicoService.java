@@ -39,6 +39,7 @@ public class MedicoService {
 		novoMedico.setNomeMedico(request.getNomeMedico());
 		novoMedico.setCpfMedico(request.getCpfMedico());
 		novoMedico.setCrmMedico(request.getCrmMedico());
+		novoMedico.setWhatsAppMedico(request.getWhatsAppMedico());
 		clinicaFound.getMedicos().add(novoMedico);
 		novoMedico.setClinica(clinicaFound);
 		medicoRepository.save(novoMedico);
