@@ -1,5 +1,6 @@
 package br.com.automica.infrastructure.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -16,8 +17,10 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
 	@EntityGraph(attributePaths = "clinica")
 	Optional<Medico> findByCpfMedico(String cpfMedico);
 
-	@EntityGraph(attributePaths = "clinica")
+
 	Optional<Medico> findByCrmMedico(String crmMedico);
+	
+	List<Medico> findByNomeMedicoContainingIgnoreCaseOrderByNomeMedicoAsc(String nomeMedico);
 
 	Page<Medico> findByClinicaIdClinica(Long idClinica, Pageable pageable);
 

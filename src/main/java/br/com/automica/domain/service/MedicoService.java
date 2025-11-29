@@ -1,13 +1,18 @@
 package br.com.automica.domain.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import br.com.automica.domain.dtos.requests.medico.CadastrarMedicoRequestDto;
 import br.com.automica.domain.dtos.responses.clinica.ListarMedicosResponseDto;
 import br.com.automica.domain.dtos.responses.medico.CadastrarMedicoResponseDto;
+import br.com.automica.domain.dtos.responses.medico.ConsultarMedicoResponseDto;
 import br.com.automica.domain.entities.Medico;
 import br.com.automica.domain.exceptions.JaCadastradoException;
 import br.com.automica.domain.exceptions.NaoEncontradoException;
@@ -24,16 +29,38 @@ public class MedicoService {
 	@Autowired
 	private ClinicaRepository clinicaRepository;
 
+	public List<ConsultarMedicoResponseDto> consultarMedico(String nome) {
+
+		var listMedicosFound = medicoRepository.findByNomeMedicoContainingIgnoreCaseOrderByNomeMedicoAsc(nome);
+
+		if (listMedicosFound.isEmpty())
+			throw new NaoEncontradoException();
+
+		List<ConsultarMedicoResponseDto> listMedicos = new ArrayList<ConsultarMedicoResponseDto>();
+
+		for (var medico : listMedicosFound) {
+			var dtoItem = new ConsultarMedicoResponseDto();
+			dtoItem.setIdMedico(medico.getIdMedico());
+			dtoItem.setNomeMedico(medico.getNomeMedico());
+			dtoItem.setCpfMedico(medico.getCpfMedico());
+			dtoItem.setCrmMedico(medico.getCrmMedico());
+			dtoItem.setWhatsAppMedico(medico.getWhatsAppMedico());
+			listMedicos.add(dtoItem);
+		}
+		return listMedicos;
+	}
+
 	public Page<ListarMedicosResponseDto> listarMedicos(Long idClinica, Integer page, Integer size) {
 
 		clinicaRepository.findById(idClinica).orElseThrow(() -> new NaoEncontradoException("Clínica não encontrada."));
 
-		var pageable = PageRequest.of(page, size);
+		var pageable = PageRequest.of(page, size, Sort.by("nomeMedico").ascending());
 
 		var paginaMedicos = medicoRepository.findByClinicaIdClinica(idClinica, pageable);
 
 		return paginaMedicos.map(medico -> {
 			var dtoItem = new ListarMedicosResponseDto();
+			dtoItem.setIdMedico(medico.getIdMedico());
 			dtoItem.setNomeMedico(medico.getNomeMedico());
 			dtoItem.setCpfMedico(medico.getCpfMedico());
 			dtoItem.setCrmMedico(medico.getCrmMedico());
