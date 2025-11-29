@@ -1,9 +1,12 @@
 package br.com.automica.domain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import br.com.automica.domain.dtos.requests.medico.CadastrarMedicoRequestDto;
+import br.com.automica.domain.dtos.responses.clinica.ListarMedicosResponseDto;
 import br.com.automica.domain.dtos.responses.medico.CadastrarMedicoResponseDto;
 import br.com.automica.domain.entities.Medico;
 import br.com.automica.domain.exceptions.JaCadastradoException;
@@ -21,20 +24,38 @@ public class MedicoService {
 	@Autowired
 	private ClinicaRepository clinicaRepository;
 
+	public Page<ListarMedicosResponseDto> listarMedicos(Long idClinica, Integer page, Integer size) {
+
+		clinicaRepository.findById(idClinica).orElseThrow(() -> new NaoEncontradoException("Clínica não encontrada."));
+
+		var pageable = PageRequest.of(page, size);
+
+		var paginaMedicos = medicoRepository.findByClinicaIdClinica(idClinica, pageable);
+
+		return paginaMedicos.map(medico -> {
+			var dtoItem = new ListarMedicosResponseDto();
+			dtoItem.setNomeMedico(medico.getNomeMedico());
+			dtoItem.setCpfMedico(medico.getCpfMedico());
+			dtoItem.setCrmMedico(medico.getCrmMedico());
+			dtoItem.setWhatsAppMedico(medico.getWhatsAppMedico());
+			return dtoItem;
+		});
+	}
+
 	@Transactional
 	public CadastrarMedicoResponseDto cadastrarMedico(CadastrarMedicoRequestDto request) {
 
-		var clinicaFound = clinicaRepository.findByIdClinica(request.getIdClinica())
-				.orElseThrow(NaoEncontradoException::new);
+		var clinicaFound = clinicaRepository.findById(request.getIdClinica())
+				.orElseThrow(() -> new NaoEncontradoException("Clínica não encontrada."));
 
 		var cpfMedicoFound = medicoRepository.findByCpfMedico(request.getCpfMedico());
-			if (cpfMedicoFound.isPresent())
-				throw new JaCadastradoException("CPF já cadastrado no sitema.");
+		if (cpfMedicoFound.isPresent())
+			throw new JaCadastradoException("CPF já cadastrado no sitema.");
 
 		var crmMedicoFound = medicoRepository.findByCrmMedico(request.getCrmMedico());
-			if (crmMedicoFound.isPresent())
-				throw new JaCadastradoException("CRM já cadastrado no sitema.");		
-			
+		if (crmMedicoFound.isPresent())
+			throw new JaCadastradoException("CRM já cadastrado no sitema.");
+
 		var novoMedico = new Medico();
 		novoMedico.setNomeMedico(request.getNomeMedico());
 		novoMedico.setCpfMedico(request.getCpfMedico());
@@ -49,7 +70,7 @@ public class MedicoService {
 		response.setNomeMedico(novoMedico.getNomeMedico());
 		response.setNomeClinica(novoMedico.getClinica().getNomeClinica());
 		response.setResposta("Médico foi cadastrado no sistema.");
-		
+
 		return response;
 	}
 }
