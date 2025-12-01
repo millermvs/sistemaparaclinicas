@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import br.com.automica.domain.exceptions.JaCadastradoException;
 import br.com.automica.domain.exceptions.NaoEncontradoException;
+import br.com.automica.domain.exceptions.NaoHaAlteracoesException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,17 +21,22 @@ public class GlobalExceptionHandler {
 		body.put("datetime", LocalDateTime.now());
 		body.put("status", status.value());
 		body.put("message", ex.getMessage());
-		
+
 		return ResponseEntity.status(status.value()).body(body);
 	}
-	
+
 	@ExceptionHandler(JaCadastradoException.class)
-	public ResponseEntity<Object> handlerJaCadastradoException(JaCadastradoException ex){		
+	public ResponseEntity<Object> handlerJaCadastradoException(JaCadastradoException ex) {
 		return createResponse(HttpStatus.CONFLICT, ex);
 	}
-	
+
 	@ExceptionHandler(NaoEncontradoException.class)
-	public ResponseEntity<Object> handlerNaoEncontrado(NaoEncontradoException ex){
+	public ResponseEntity<Object> handlerNaoEncontrado(NaoEncontradoException ex) {
 		return createResponse(HttpStatus.NOT_FOUND, ex);
+	}
+
+	@ExceptionHandler(NaoHaAlteracoesException.class)
+	public ResponseEntity<Object> handlerNaoHaAlteracoes(NaoHaAlteracoesException ex) {
+		return createResponse(HttpStatus.BAD_REQUEST, ex);
 	}
 }

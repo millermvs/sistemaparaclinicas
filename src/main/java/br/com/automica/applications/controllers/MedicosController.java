@@ -8,13 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.automica.domain.dtos.requests.medico.CadastrarMedicoRequestDto;
+import br.com.automica.domain.dtos.requests.medico.EditarMedicoRequestDto;
 import br.com.automica.domain.dtos.responses.medico.CadastrarMedicoResponseDto;
 import br.com.automica.domain.dtos.responses.medico.ConsultarMedicoResponseDto;
+import br.com.automica.domain.dtos.responses.medico.EditarMedicoResponseDto;
 import br.com.automica.domain.service.MedicoService;
 import jakarta.validation.Valid;
 
@@ -30,11 +34,17 @@ public class MedicosController {
 		var response = medicoService.cadastrarMedico(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
-	
-	@GetMapping("consultar/{nome}")
-	public ResponseEntity<List<ConsultarMedicoResponseDto>> get(@PathVariable String nome){
+
+	@GetMapping
+	public ResponseEntity<List<ConsultarMedicoResponseDto>> get(@RequestParam String nome) {
 		var response = medicoService.consultarMedico(nome);
 		return ResponseEntity.ok(response);
 	}
 
+	@PutMapping("editar/{idMedico}")
+	public ResponseEntity<EditarMedicoResponseDto> put(@Valid @PathVariable Long idMedico,
+			@RequestBody EditarMedicoRequestDto request) {
+		var response = medicoService.editarMedico(idMedico, request);
+		return ResponseEntity.ok(response);
+	}
 }
