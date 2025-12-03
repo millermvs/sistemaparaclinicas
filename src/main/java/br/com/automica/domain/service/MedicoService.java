@@ -14,6 +14,7 @@ import br.com.automica.domain.dtos.requests.medico.EditarMedicoRequestDto;
 import br.com.automica.domain.dtos.responses.clinica.ListarMedicosResponseDto;
 import br.com.automica.domain.dtos.responses.medico.CadastrarMedicoResponseDto;
 import br.com.automica.domain.dtos.responses.medico.ConsultarMedicoResponseDto;
+import br.com.automica.domain.dtos.responses.medico.DeletarMedicoResponseDto;
 import br.com.automica.domain.dtos.responses.medico.EditarMedicoResponseDto;
 import br.com.automica.domain.entities.Medico;
 import br.com.automica.domain.exceptions.JaCadastradoException;
@@ -33,6 +34,24 @@ public class MedicoService {
 	private ClinicaRepository clinicaRepository;
 
 	@Transactional
+	public DeletarMedicoResponseDto deletar(Long idMedico) {
+
+		var medicoFound = medicoRepository.findById(idMedico)
+				.orElseThrow(() -> new NaoEncontradoException("Médico não encontrado."));
+
+		medicoFound.setMedicoAtivo(false);		
+
+		var response = new DeletarMedicoResponseDto();
+		response.setIdMedico(medicoFound.getIdMedico());
+		response.setNomeMedico(medicoFound.getNomeMedico());
+		response.setCpfMedico(medicoFound.getCpfMedico());
+		response.setCrmMedico(medicoFound.getCrmMedico());
+		response.setWhatsAppMedico(medicoFound.getWhatsAppMedico());
+		response.setResposta("Médico excluído.");
+		return response;
+	}
+
+	@Transactional
 	public EditarMedicoResponseDto editarMedico(Long idMedico, EditarMedicoRequestDto request) {
 
 		var medicoFound = medicoRepository.findById(idMedico)
@@ -46,8 +65,7 @@ public class MedicoService {
 		if (medicoFoundByCrm.isPresent() && !medicoFoundByCrm.get().getIdMedico().equals(idMedico))
 			throw new JaCadastradoException("CRM já cadastrado no sistema.");
 
-		if (medicoFound.getIdMedico().equals(idMedico)
-				&& medicoFound.getNomeMedico().equals(request.getNomeMedico())
+		if (medicoFound.getIdMedico().equals(idMedico) && medicoFound.getNomeMedico().equals(request.getNomeMedico())
 				&& medicoFound.getCpfMedico().equals(request.getCpfMedico())
 				&& medicoFound.getCrmMedico().equals(request.getCrmMedico())
 				&& medicoFound.getWhatsAppMedico().equals(request.getWhatsAppMedico()))
@@ -95,7 +113,7 @@ public class MedicoService {
 
 		var pageable = PageRequest.of(page, size, Sort.by("nomeMedico").ascending());
 
-		var paginaMedicos = medicoRepository.findByClinicaIdClinica(idClinica, pageable);
+		var paginaMedicos = medicoRepository.findAtivosByClinicaIdClinica(idClinica, pageable);
 
 		return paginaMedicos.map(medico -> {
 			var dtoItem = new ListarMedicosResponseDto();
@@ -127,6 +145,7 @@ public class MedicoService {
 		novoMedico.setCpfMedico(request.getCpfMedico());
 		novoMedico.setCrmMedico(request.getCrmMedico());
 		novoMedico.setWhatsAppMedico(request.getWhatsAppMedico());
+		novoMedico.setMedicoAtivo(true);
 		clinicaFound.getMedicos().add(novoMedico);
 		novoMedico.setClinica(clinicaFound);
 		medicoRepository.save(novoMedico);

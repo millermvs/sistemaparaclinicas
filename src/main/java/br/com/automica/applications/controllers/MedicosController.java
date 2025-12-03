@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import br.com.automica.domain.dtos.requests.medico.CadastrarMedicoRequestDto;
 import br.com.automica.domain.dtos.requests.medico.EditarMedicoRequestDto;
 import br.com.automica.domain.dtos.responses.medico.CadastrarMedicoResponseDto;
 import br.com.automica.domain.dtos.responses.medico.ConsultarMedicoResponseDto;
+import br.com.automica.domain.dtos.responses.medico.DeletarMedicoResponseDto;
 import br.com.automica.domain.dtos.responses.medico.EditarMedicoResponseDto;
 import br.com.automica.domain.service.MedicoService;
 import jakarta.validation.Valid;
@@ -42,9 +44,15 @@ public class MedicosController {
 	}
 
 	@PutMapping("editar/{idMedico}")
-	public ResponseEntity<EditarMedicoResponseDto> put(@Valid @PathVariable Long idMedico,
-			@RequestBody EditarMedicoRequestDto request) {
+	public ResponseEntity<EditarMedicoResponseDto> put(@PathVariable Long idMedico,
+			@Valid @RequestBody EditarMedicoRequestDto request) {
 		var response = medicoService.editarMedico(idMedico, request);
+		return ResponseEntity.ok(response);
+	}
+	
+	@DeleteMapping("deletar/{idMedico}")
+	public ResponseEntity<DeletarMedicoResponseDto> delete(@PathVariable Long idMedico){
+		var response = medicoService.deletar(idMedico);
 		return ResponseEntity.ok(response);
 	}
 }

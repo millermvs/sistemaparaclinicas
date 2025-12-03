@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import br.com.automica.domain.entities.Medico;
@@ -17,11 +19,15 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
 	@EntityGraph(attributePaths = "clinica")
 	Optional<Medico> findByCpfMedico(String cpfMedico);
 
-
 	Optional<Medico> findByCrmMedico(String crmMedico);
 	
 	List<Medico> findByNomeMedicoContainingIgnoreCaseOrderByNomeMedicoAsc(String nomeMedico);
 
-	Page<Medico> findByClinicaIdClinica(Long idClinica, Pageable pageable);
+	@Query("""
+			SELECT m FROM Medico m
+			WHERE m.clinica.idClinica = :idClinica
+			AND m.medicoAtivo = true			
+			""")
+	Page<Medico> findAtivosByClinicaIdClinica(@Param("idClinica")Long idClinica, Pageable pageable);
 
 }
