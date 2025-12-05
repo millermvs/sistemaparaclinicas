@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.automica.domain.dtos.requests.consulta.CadastrarConsultaRequestDto;
 import br.com.automica.domain.dtos.responses.consulta.CadastrarConsultaResponseDto;
+import br.com.automica.domain.service.ConsultaService;
 import jakarta.validation.Valid;
 
 @RestController

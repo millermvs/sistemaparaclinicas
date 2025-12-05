@@ -19,9 +19,9 @@ public class PacientesController {
 
 	@Autowired
 	private PacienteService pacienteService;
-	
+
 	@PostMapping("cadastrar")
-	public ResponseEntity<CadastrarPacienteResponseDto> post(@Valid @RequestBody CadastrarPacienteRequestDto request){
+	public ResponseEntity<CadastrarPacienteResponseDto> post(@Valid @RequestBody CadastrarPacienteRequestDto request) {
 		var response = pacienteService.cadastrarPaciente(request);
 		return ResponseEntity.status(HttpStatus.CREATED.value()).body(response);
 	}

@@ -1,4 +1,4 @@
-package br.com.automica.applications.controllers;
+package br.com.automica.domain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

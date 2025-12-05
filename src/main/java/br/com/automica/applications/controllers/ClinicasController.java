@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.automica.domain.dtos.requests.clinica.CadastrarClinicaRequestDto;
 import br.com.automica.domain.dtos.responses.clinica.CadastrarClinicaResponseDto;
 import br.com.automica.domain.dtos.responses.clinica.ListarMedicosResponseDto;
+import br.com.automica.domain.dtos.responses.clinica.ListarPacientesResponseDto;
 import br.com.automica.domain.service.ClinicaService;
 import br.com.automica.domain.service.MedicoService;
+import br.com.automica.domain.service.PacienteService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -28,6 +30,9 @@ public class ClinicasController {
 
 	@Autowired
 	private MedicoService medicoService;
+	
+	@Autowired
+	private PacienteService pacienteService;
 
 	@PostMapping("cadastrar")
 	public ResponseEntity<CadastrarClinicaResponseDto> post(@Valid @RequestBody CadastrarClinicaRequestDto request) {
@@ -39,6 +44,13 @@ public class ClinicasController {
 	public ResponseEntity<Page<ListarMedicosResponseDto>> getAllMedicos(@PathVariable Long idClinica,
 			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "5") Integer size) {
 		var response = medicoService.listarMedicos(idClinica, page, size);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/{idClinica}/pacientes")
+	public ResponseEntity<Page<ListarPacientesResponseDto>> getAllPacientes(@PathVariable Long idClinica,
+			@RequestParam(defaultValue = "0") Integer pageNumber, @RequestParam(defaultValue = "5") Integer pageSize) {
+		var response = pacienteService.listarPacientes(idClinica, pageNumber, pageSize);
 		return ResponseEntity.ok(response);
 	}
 

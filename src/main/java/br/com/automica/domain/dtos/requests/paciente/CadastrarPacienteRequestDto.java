@@ -1,6 +1,7 @@
 package br.com.automica.domain.dtos.requests.paciente;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class CadastrarPacienteRequestDto {
+	
+	@NotNull
+	private Long idClinica;
 
 	@NotBlank
 	@Pattern(regexp = "^[A-Za-zÀ-Üà-ü\\s]{1,100}$", message = "Somente letras e espaços. Min. 1 e Máx. 100 caracteres.")
