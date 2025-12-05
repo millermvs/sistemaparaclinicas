@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.automica.domain.dtos.requests.medico.CadastrarMedicoRequestDto;
 import br.com.automica.domain.dtos.requests.medico.EditarMedicoRequestDto;
@@ -22,7 +23,7 @@ import br.com.automica.domain.exceptions.NaoEncontradoException;
 import br.com.automica.domain.exceptions.NaoHaAlteracoesException;
 import br.com.automica.infrastructure.repositories.ClinicaRepository;
 import br.com.automica.infrastructure.repositories.MedicoRepository;
-import jakarta.transaction.Transactional;
+
 
 @Service
 public class MedicoService {
@@ -107,6 +108,7 @@ public class MedicoService {
 		return listMedicos;
 	}
 
+	@Transactional(readOnly = true)
 	public Page<ListarMedicosResponseDto> listarMedicos(Long idClinica, Integer page, Integer size) {
 
 		clinicaRepository.findById(idClinica).orElseThrow(() -> new NaoEncontradoException("Clínica não encontrada."));

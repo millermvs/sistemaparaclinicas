@@ -2,6 +2,7 @@ package br.com.automica.domain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.automica.domain.dtos.requests.consulta.CadastrarConsultaRequestDto;
 import br.com.automica.domain.dtos.responses.consulta.CadastrarConsultaResponseDto;
@@ -11,7 +12,7 @@ import br.com.automica.domain.exceptions.NaoEncontradoException;
 import br.com.automica.infrastructure.repositories.ConsultaRepository;
 import br.com.automica.infrastructure.repositories.MedicoRepository;
 import br.com.automica.infrastructure.repositories.PacienteRepository;
-import jakarta.transaction.Transactional;
+
 
 @Service
 public class ConsultaService {

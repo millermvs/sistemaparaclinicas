@@ -49,8 +49,8 @@ public class ClinicasController {
 
 	@GetMapping("/{idClinica}/pacientes")
 	public ResponseEntity<Page<ListarPacientesResponseDto>> getAllPacientes(@PathVariable Long idClinica,
-			@RequestParam(defaultValue = "0") Integer pageNumber, @RequestParam(defaultValue = "5") Integer pageSize) {
-		var response = pacienteService.listarPacientes(idClinica, pageNumber, pageSize);
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "5") Integer size) {
+		var response = pacienteService.listarPacientes(idClinica, page, size);
 		return ResponseEntity.ok(response);
 	}
 

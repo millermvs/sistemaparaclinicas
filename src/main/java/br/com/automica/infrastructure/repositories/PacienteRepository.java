@@ -15,6 +15,8 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 	Optional<Paciente> findByIdPaciente(Long id);
 
 	Optional<Paciente> findByCpfPaciente(String cpf);
+	
+	Page<Paciente> findByNomePacienteContainingIgnoreCaseOrderByNomePaciente(String nomePaciente, Pageable pageable);
 
 	Page<Paciente> findByClinicaIdClinica(Long idClinica, Pageable pageable);
 }
