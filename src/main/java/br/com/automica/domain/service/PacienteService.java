@@ -8,15 +8,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.automica.domain.dtos.requests.paciente.CadastrarPacienteRequestDto;
+import br.com.automica.domain.dtos.requests.paciente.EditarPacienteRequestDto;
 import br.com.automica.domain.dtos.responses.clinica.ListarPacientesResponseDto;
 import br.com.automica.domain.dtos.responses.paciente.CadastrarPacienteResponseDto;
 import br.com.automica.domain.dtos.responses.paciente.ConsultarPacienteResponseDto;
+import br.com.automica.domain.dtos.responses.paciente.EditarPacienteResponseDto;
 import br.com.automica.domain.entities.Paciente;
 import br.com.automica.domain.exceptions.JaCadastradoException;
 import br.com.automica.domain.exceptions.NaoEncontradoException;
+import br.com.automica.domain.exceptions.NaoHaAlteracoesException;
 import br.com.automica.infrastructure.repositories.ClinicaRepository;
 import br.com.automica.infrastructure.repositories.PacienteRepository;
-
 
 @Service
 public class PacienteService {
@@ -27,12 +29,40 @@ public class PacienteService {
 	@Autowired
 	private ClinicaRepository clinicaRepository;
 
+	@Transactional
+	public EditarPacienteResponseDto editarPaciente(Long idPaciente, EditarPacienteRequestDto request) {
+		var pacienteFound = pacienteRepository.findById(idPaciente)
+				.orElseThrow(() -> new NaoEncontradoException("Paciente não encontrado."));
+
+		if (pacienteFound.getNomePaciente().equals(request.getNomePaciente())
+				&& pacienteFound.getCpfPaciente().equals(request.getCpfPaciente())
+				&& pacienteFound.getWhatsAppPaciente().equals(request.getWhatsAppPaciente()))
+			throw new NaoHaAlteracoesException("Não foi alterado nenhum dado do paciente.");
+
+		pacienteFound.setNomePaciente(request.getNomePaciente());
+		pacienteFound.setCpfPaciente(request.getCpfPaciente());
+		pacienteFound.setWhatsAppPaciente(request.getWhatsAppPaciente());
+
+		var response = new EditarPacienteResponseDto();
+		response.setIdPaciente(pacienteFound.getIdPaciente());
+		response.setNomePaciente(pacienteFound.getNomePaciente());
+		response.setCpfPaciente(pacienteFound.getCpfPaciente());
+		response.setWhatsAppPaciente(pacienteFound.getWhatsAppPaciente());
+		response.setResposta("Dados do paciente foram alterados.");
+
+		return response;
+	}
+
 	@Transactional(readOnly = true)
 	public Page<ConsultarPacienteResponseDto> consultarPaciente(String nome, Integer page, Integer size) {
 
 		var pageable = PageRequest.of(page, size, Sort.by("nomePaciente").ascending());
 
-		var paginaPaciente = pacienteRepository.findByNomePacienteContainingIgnoreCaseOrderByNomePaciente(nome, pageable);
+		var paginaPaciente = pacienteRepository.findByNomePacienteContainingIgnoreCaseOrderByNomePaciente(nome,
+				pageable);
+
+		if (paginaPaciente.isEmpty())
+			throw new NaoEncontradoException("Nenhum paciente encontrado.");
 
 		return paginaPaciente.map(paciente -> {
 			var dtoItem = new ConsultarPacienteResponseDto();
