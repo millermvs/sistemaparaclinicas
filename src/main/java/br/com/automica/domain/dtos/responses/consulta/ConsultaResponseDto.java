@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CadastrarConsultaResponseDto {
+public class ConsultaResponseDto {
 
 	private Long idConsulta;	
 	private LocalDate dataConsulta;
