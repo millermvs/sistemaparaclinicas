@@ -40,7 +40,7 @@ public class MedicoService {
 		var medicoFound = medicoRepository.findById(idMedico)
 				.orElseThrow(() -> new NaoEncontradoException("Médico não encontrado."));
 
-		medicoFound.setMedicoAtivo(false);		
+		medicoFound.setStatusAtivo(false);		
 
 		var response = new DeletarMedicoResponseDto();
 		response.setIdMedico(medicoFound.getIdMedico());
@@ -87,9 +87,9 @@ public class MedicoService {
 		return response;
 	}
 
-	public List<ConsultarMedicoResponseDto> consultarMedico(String nome) {
+	public List<ConsultarMedicoResponseDto> consultarMedicosAtivos() {
 
-		var listMedicosFound = medicoRepository.findByNomeMedicoContainingIgnoreCaseOrderByNomeMedicoAsc(nome);
+		var listMedicosFound = medicoRepository.findByMedicoStatusAtivo();
 
 		if (listMedicosFound.isEmpty())
 			throw new NaoEncontradoException("Nehum médico encontrado.");
@@ -147,7 +147,7 @@ public class MedicoService {
 		novoMedico.setCpfMedico(request.getCpfMedico());
 		novoMedico.setCrmMedico(request.getCrmMedico());
 		novoMedico.setWhatsAppMedico(request.getWhatsAppMedico());
-		novoMedico.setMedicoAtivo(true);
+		novoMedico.setStatusAtivo(true);
 		clinicaFound.getMedicos().add(novoMedico);
 		novoMedico.setClinica(clinicaFound);
 		medicoRepository.save(novoMedico);

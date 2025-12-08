@@ -21,12 +21,18 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
 
 	Optional<Medico> findByCrmMedico(String crmMedico);
 
-	List<Medico> findByNomeMedicoContainingIgnoreCaseOrderByNomeMedicoAsc(String nomeMedico);
+	@Query("""
+			SELECT m FROM Medico m
+			WHERE m.statusAtivo = true
+			ORDER BY nomeMedico
+			""")
+	List<Medico> findByMedicoStatusAtivo();
 	
 	@Query("""
 			SELECT m FROM Medico m
 			WHERE m.clinica.idClinica = :idClinica
-			AND m.medicoAtivo = true
+			AND m.statusAtivo = true
+			ORDER BY nomeMedico
 			""")
 	Page<Medico> findAtivosByClinicaIdClinica(@Param("idClinica") Long idClinica, Pageable pageable);
 

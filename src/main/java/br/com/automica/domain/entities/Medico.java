@@ -43,7 +43,7 @@ public class Medico {
 	private String whatsAppMedico;
 	
 	@Column (nullable = false)
-	private Boolean medicoAtivo;
+	private Boolean statusAtivo;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_clinica", referencedColumnName = "idClinica")

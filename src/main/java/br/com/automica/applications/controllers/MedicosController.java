@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.automica.domain.dtos.requests.medico.CadastrarMedicoRequestDto;
@@ -37,9 +36,9 @@ public class MedicosController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@GetMapping
-	public ResponseEntity<List<ConsultarMedicoResponseDto>> get(@RequestParam String nome) {
-		var response = medicoService.consultarMedico(nome);
+	@GetMapping("ativos")
+	public ResponseEntity<List<ConsultarMedicoResponseDto>> getAll() {
+		var response = medicoService.consultarMedicosAtivos();
 		return ResponseEntity.ok(response);
 	}
 
@@ -49,9 +48,9 @@ public class MedicosController {
 		var response = medicoService.editarMedico(idMedico, request);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	@DeleteMapping("deletar/{idMedico}")
-	public ResponseEntity<DeletarMedicoResponseDto> delete(@PathVariable Long idMedico){
+	public ResponseEntity<DeletarMedicoResponseDto> delete(@PathVariable Long idMedico) {
 		var response = medicoService.deletar(idMedico);
 		return ResponseEntity.ok(response);
 	}
