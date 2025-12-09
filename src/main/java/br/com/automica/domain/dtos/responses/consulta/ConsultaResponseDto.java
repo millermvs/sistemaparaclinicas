@@ -15,7 +15,5 @@ public class ConsultaResponseDto {
 	private LocalTime horaConsulta;
 	private String nomeMedico;
 	private String nomePaciente;	
-	private String nomeClinica;	
-	private String resposta;
-
+	private String nomeClinica;
 }

@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +31,8 @@ public class ConsultaService {
 
 	@Autowired
 	private ConsultaRepository consultaRepository;
-	
-	private ConsultaResponseDto createResponse(Consulta consulta, String resposta) {
+
+	private ConsultaResponseDto createResponse(Consulta consulta) {
 		var response = new ConsultaResponseDto();
 		response.setIdConsulta(consulta.getIdConsulta());
 		response.setDataConsulta(consulta.getDataConsulta());
@@ -37,8 +40,24 @@ public class ConsultaService {
 		response.setNomeMedico(consulta.getMedico().getNomeMedico());
 		response.setNomePaciente(consulta.getPaciente().getNomePaciente());
 		response.setNomeClinica(consulta.getMedico().getClinica().getNomeClinica());
-		response.setResposta(resposta);
 		return response;
+	}
+
+	@Transactional(readOnly = true)
+	public Page<ConsultaResponseDto> consultarPorData(LocalDate dataInicio, LocalDate dataFim, Integer page,
+			Integer size) {
+
+		if(dataInicio.isAfter(dataFim))
+			throw new DataHoraInvalidaException("Data inicial maior que data final.");
+		
+		var pageable = PageRequest.of(page, size, Sort.by("dataConsulta"));
+
+		var paginaConsultas = consultaRepository.findByDataConsultaBetween(dataInicio, dataFim, pageable);
+
+		return paginaConsultas.map(consulta -> {
+			var response = createResponse(consulta);
+			return response;
+		});
 	}
 
 	@Transactional
@@ -49,7 +68,6 @@ public class ConsultaService {
 
 		if (dataAtual.isAfter(request.getDataConsulta()))
 			throw new DataHoraInvalidaException("Data inválida, selecione uma data futura.");
-
 
 		if (dataAtual.isEqual(request.getDataConsulta()) && horaAtual.isAfter(request.getHoraConsulta()))
 			throw new DataHoraInvalidaException("Hora inválida, selecione uma hora futura.");
@@ -68,7 +86,7 @@ public class ConsultaService {
 
 		var consultaFoundPaciente = consultaRepository.findByDataConsultaHoraConsultaPacienteIdPaciente(
 				request.getDataConsulta(), request.getHoraConsulta(), request.getIdPaciente());
-		
+
 		if (consultaFoundPaciente.isPresent())
 			throw new DataHoraInvalidaException("Paciente com agendamento neste horário.");
 
@@ -81,11 +99,7 @@ public class ConsultaService {
 		medicoFound.getConsultas().add(novaConsulta);
 		pacienteFound.getConsultas().add(novaConsulta);
 		consultaRepository.save(novaConsulta);
-		
-		var resposta = "Consulta foi marcada.";
-		
-		return createResponse(novaConsulta, resposta);		
 
+		return createResponse(novaConsulta);
 	}
-
 }

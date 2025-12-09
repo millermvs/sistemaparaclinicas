@@ -58,13 +58,13 @@ public class PacienteService {
 
 		var pageable = PageRequest.of(page, size, Sort.by("nomePaciente").ascending());
 
-		var paginaPaciente = pacienteRepository.findByNomePacienteContainingIgnoreCaseOrderByNomePaciente(nome,
+		var paginaPacientes = pacienteRepository.findByNomePacienteContainingIgnoreCaseOrderByNomePaciente(nome,
 				pageable);
 
-		if (paginaPaciente.isEmpty())
+		if (paginaPacientes.isEmpty())
 			throw new NaoEncontradoException("Nenhum paciente encontrado.");
 
-		return paginaPaciente.map(paciente -> {
+		return paginaPacientes.map(paciente -> {
 			var dtoItem = new ConsultarPacienteResponseDto();
 			dtoItem.setIdPaciente(paciente.getIdPaciente());
 			dtoItem.setNomePaciente(paciente.getNomePaciente());

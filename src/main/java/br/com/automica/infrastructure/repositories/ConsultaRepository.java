@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,8 +27,7 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			AND c.medico.idMedico = :idMedico
 			""")
 	Optional<Consulta> findByDataConsultaHoraConsultaMedicoIdMedico(@Param("dataConsulta") LocalDate dataConsulta,
-			@Param("horaConsulta") LocalTime horaConsulta,
-			@Param("idMedico") Long idMedico);
+			@Param("horaConsulta") LocalTime horaConsulta, @Param("idMedico") Long idMedico);
 
 	@Query("""
 			SELECT c FROM Consulta c
@@ -35,6 +36,14 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			AND c.paciente.idPaciente = :idPaciente
 			""")
 	Optional<Consulta> findByDataConsultaHoraConsultaPacienteIdPaciente(@Param("dataConsulta") LocalDate dataConsulta,
-			@Param("horaConsulta") LocalTime horaConsulta,
-			@Param("idPaciente") Long idPaciente);
+			@Param("horaConsulta") LocalTime horaConsulta, @Param("idPaciente") Long idPaciente);
+
+	@EntityGraph(attributePaths = { "medico", "paciente" })
+	@Query("""
+			SELECT c FROM Consulta c
+			WHERE c.dataConsulta >= :dataInicio
+			AND c.dataConsulta <= :dataFim
+			""")
+	Page<Consulta> findByDataConsultaBetween(@Param("dataInicio") LocalDate dataInicio,
+			@Param("dataFim") LocalDate dataFim, Pageable pageable);
 }
