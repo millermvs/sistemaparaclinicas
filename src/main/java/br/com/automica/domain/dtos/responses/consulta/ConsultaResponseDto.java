@@ -9,11 +9,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ConsultaResponseDto {
-
 	private Long idConsulta;	
 	private LocalDate dataConsulta;
 	private LocalTime horaConsulta;
 	private String nomeMedico;
-	private String nomePaciente;	
+	private String nomePaciente;
+	private String status;
 	private String nomeClinica;
 }

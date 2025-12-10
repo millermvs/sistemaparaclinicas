@@ -40,19 +40,43 @@ public class ConsultaService {
 		response.setNomeMedico(consulta.getMedico().getNomeMedico());
 		response.setNomePaciente(consulta.getPaciente().getNomePaciente());
 		response.setNomeClinica(consulta.getMedico().getClinica().getNomeClinica());
+		response.setStatus(consulta.getStatus().toString());
 		return response;
+	}
+
+	@Transactional(readOnly = true)
+	public Page<ConsultaResponseDto> consultarPorDataMedico(Long idMedico, LocalDate dataInicio, LocalDate dataFim,
+			Integer page, Integer size) {
+
+		if (dataInicio.isAfter(dataFim))
+			throw new DataHoraInvalidaException("Intervalo de datas inválido: data inicial posterior à data final.");
+
+		medicoRepository.findById(idMedico).orElseThrow(() -> new NaoEncontradoException("Médico não encontrado."));
+
+		var pageable = PageRequest.of(page, size, Sort.by("dataConsulta"));
+
+		var paginaConsultas = consultaRepository.findByDataConsultaBetweenAndMedicoIdMedico(dataInicio, dataFim, idMedico,
+				pageable);
+
+		return paginaConsultas.map(consulta -> {
+			var response = createResponse(consulta);
+			return response;
+		});
 	}
 
 	@Transactional(readOnly = true)
 	public Page<ConsultaResponseDto> consultarPorData(LocalDate dataInicio, LocalDate dataFim, Integer page,
 			Integer size) {
 
-		if(dataInicio.isAfter(dataFim))
-			throw new DataHoraInvalidaException("Data inicial maior que data final.");
-		
+		if (dataInicio.isAfter(dataFim))
+			throw new DataHoraInvalidaException("Intervalo de datas inválido: data inicial posterior à data final.");
+
 		var pageable = PageRequest.of(page, size, Sort.by("dataConsulta"));
 
 		var paginaConsultas = consultaRepository.findByDataConsultaBetween(dataInicio, dataFim, pageable);
+
+		if (paginaConsultas.isEmpty())
+			throw new NaoEncontradoException("Nenhuma consulta encontrada");
 
 		return paginaConsultas.map(consulta -> {
 			var response = createResponse(consulta);
@@ -67,7 +91,7 @@ public class ConsultaService {
 		var horaAtual = LocalTime.now().withNano(0);
 
 		if (dataAtual.isAfter(request.getDataConsulta()))
-			throw new DataHoraInvalidaException("Data inválida, selecione uma data futura.");
+			throw new DataHoraInvalidaException("Data final inválida, selecione uma data futura.");
 
 		if (dataAtual.isEqual(request.getDataConsulta()) && horaAtual.isAfter(request.getHoraConsulta()))
 			throw new DataHoraInvalidaException("Hora inválida, selecione uma hora futura.");

@@ -32,10 +32,19 @@ public class ConsultasController {
 		return ResponseEntity.status(HttpStatus.CREATED.value()).body(response);
 	}
 
-	@GetMapping("data/{dataInicio}/{dataFim}")
+	@GetMapping("datas/{dataInicio}/{dataFim}")
 	public ResponseEntity<Page<ConsultaResponseDto>> getByDate(@PathVariable LocalDate dataInicio,
-			@PathVariable LocalDate dataFim, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
+			@PathVariable LocalDate dataFim, @RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer size) {
 		var response = consultaService.consultarPorData(dataInicio, dataFim, page, size);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("medico")
+	public ResponseEntity<Page<ConsultaResponseDto>> getByDateAndMedico(@RequestParam Long idMedico,
+			@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim, @RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer size) {
+		var response = consultaService.consultarPorDataMedico(idMedico, dataInicio, dataFim, page, size);
 		return ResponseEntity.ok(response);
 	}
 

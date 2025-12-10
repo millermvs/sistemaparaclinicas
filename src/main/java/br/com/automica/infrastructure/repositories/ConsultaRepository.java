@@ -46,4 +46,15 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			""")
 	Page<Consulta> findByDataConsultaBetween(@Param("dataInicio") LocalDate dataInicio,
 			@Param("dataFim") LocalDate dataFim, Pageable pageable);
+
+	@EntityGraph(attributePaths = { "medico", "paciente" })
+	@Query("""
+			SELECT c FROM Consulta c
+			WHERE c.dataConsulta >= :dataInicio
+			AND c.dataConsulta <= :dataFim
+			AND c.medico.idMedico = :idMedico
+			""")
+	Page<Consulta> findByDataConsultaBetweenAndMedicoIdMedico(@Param("dataInicio") LocalDate dataInicio,
+			@Param("dataFim") LocalDate dataFim, @Param("idMedico") Long idMedico, Pageable pageable);
+
 }

@@ -80,9 +80,11 @@ public class PacienteService {
 
 		var pageable = PageRequest.of(page, size, Sort.by("nomePaciente").ascending());
 
-		var pagePaciente = pacienteRepository.findByClinicaIdClinica(idClinica, pageable);
+		var paginaPacientes = pacienteRepository.findByClinicaIdClinica(idClinica, pageable);
+		if (paginaPacientes.isEmpty())
+			throw new NaoEncontradoException("Nenhum paciente encontrado.");
 
-		return pagePaciente.map(paciente -> {
+		return paginaPacientes.map(paciente -> {
 			var dtoItem = new ListarPacientesResponseDto();
 			dtoItem.setIdPaciente(paciente.getIdPaciente());
 			dtoItem.setNomePaciente(paciente.getNomePaciente());

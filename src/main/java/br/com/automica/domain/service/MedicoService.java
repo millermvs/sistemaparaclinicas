@@ -116,6 +116,9 @@ public class MedicoService {
 		var pageable = PageRequest.of(page, size, Sort.by("nomeMedico").ascending());
 
 		var paginaMedicos = medicoRepository.findAtivosByClinicaIdClinica(idClinica, pageable);
+		
+		if (paginaMedicos.isEmpty())
+			throw new NaoEncontradoException("Nehum médico encontrado.");
 
 		return paginaMedicos.map(medico -> {
 			var dtoItem = new ListarMedicosResponseDto();
