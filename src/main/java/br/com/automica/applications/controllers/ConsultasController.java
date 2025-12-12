@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.automica.domain.dtos.requests.clinica.RemarcarConsultaRequestDto;
 import br.com.automica.domain.dtos.requests.consulta.CadastrarConsultaRequestDto;
+import br.com.automica.domain.dtos.requests.consulta.RemarcarConsultaRequestDto;
 import br.com.automica.domain.dtos.responses.consulta.ConsultaResponseDto;
 import br.com.automica.domain.service.ConsultaService;
 import jakarta.validation.Valid;
@@ -37,7 +37,7 @@ public class ConsultasController {
 	@PutMapping("remarcar/{idConsulta}")
 	public ResponseEntity<ConsultaResponseDto> put(@PathVariable Long idConsulta,
 			@Valid @RequestBody RemarcarConsultaRequestDto request) {
-		var response = consultaService.remarcarConsulta(idConsulta, request);		
+		var response = consultaService.remarcarConsulta(idConsulta, request);
 		return ResponseEntity.ok(response);
 	}
 
@@ -55,6 +55,12 @@ public class ConsultasController {
 			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
 		var response = consultaService.consultarPorDataMedico(idMedico, dataInicio, dataFim, page, size);
 		return ResponseEntity.ok(response);
+	}
+
+	@PutMapping("{idConsulta}/cancelar")
+	public ResponseEntity<ConsultaResponseDto> put(@PathVariable Long idConsulta) {
+		var response = consultaService.desmarcarConsulta(idConsulta);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 }

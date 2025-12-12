@@ -1,4 +1,4 @@
-package br.com.automica.domain.dtos.requests.clinica;
+package br.com.automica.domain.dtos.requests.consulta;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,9 +12,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RemarcarConsultaRequestDto {
-	
-	@NotNull
-	private Long idConsuta;
 	
 	@NotNull
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "America/Sao_Paulo")

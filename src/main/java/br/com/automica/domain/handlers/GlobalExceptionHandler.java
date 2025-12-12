@@ -9,10 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import br.com.automica.domain.exceptions.DataHoraInvalidaException;
 import br.com.automica.domain.exceptions.JaCadastradoException;
 import br.com.automica.domain.exceptions.NaoEncontradoException;
 import br.com.automica.domain.exceptions.NaoHaAlteracoesException;
+import br.com.automica.domain.exceptions.RegraNegocioException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -41,8 +41,8 @@ public class GlobalExceptionHandler {
 		return createResponse(HttpStatus.BAD_REQUEST, ex);
 	}
 
-	@ExceptionHandler(DataHoraInvalidaException.class)
-	public ResponseEntity<Object> handlerDataInvalida(DataHoraInvalidaException ex) {
+	@ExceptionHandler(RegraNegocioException.class)
+	public ResponseEntity<Object> handlerRegraNegocio(RegraNegocioException ex) {
 		return createResponse(HttpStatus.UNPROCESSABLE_CONTENT, ex);
 	}
 }
