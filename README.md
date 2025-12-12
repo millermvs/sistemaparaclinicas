@@ -1,6 +1,7 @@
-# 🏥 Sistema para Clínicas – Agendamento de Consultas
+# 🏥 Sistema de Agendamento de Consultas – Backend
 
-Projeto focado em **modelagem de banco de dados** para um sistema simples de **agendamento de consultas médicas**.
+API REST para gestão de **clínicas, médicos, pacientes e consultas**, incluindo **agendamento, remarcação e cancelamento de consultas**.  
+Projeto desenvolvido em **Java 21 + Spring Boot 3**, pensado para evoluir para um modelo **SaaS para clínicas**.
 
 A ideia é representar de forma clara os relacionamentos entre:
 

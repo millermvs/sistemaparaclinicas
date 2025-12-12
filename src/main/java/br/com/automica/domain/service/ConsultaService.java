@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.automica.domain.dtos.requests.clinica.RemarcarConsultaRequestDto;
 import br.com.automica.domain.dtos.requests.consulta.CadastrarConsultaRequestDto;
 import br.com.automica.domain.dtos.responses.consulta.ConsultaResponseDto;
 import br.com.automica.domain.entities.Consulta;
@@ -44,6 +45,49 @@ public class ConsultaService {
 		return response;
 	}
 
+	@Transactional
+	public ConsultaResponseDto remarcarConsulta(Long idConsulta, RemarcarConsultaRequestDto request) {
+		var dataAtual = LocalDate.now();
+
+		if (dataAtual.isAfter(request.getDataConsulta()))
+			throw new DataHoraInvalidaException("Data inválida: selecione uma data futura.");
+
+		var horaAtual = LocalTime.now().withNano(0);
+
+		if (dataAtual.isEqual(request.getDataConsulta()) && horaAtual.isAfter(request.getHoraConsulta()))
+			throw new DataHoraInvalidaException("Hora inválida: selecione uma hora futura.");
+
+		var consultaFound = consultaRepository.findByIdConsulta(idConsulta)
+				.orElseThrow(() -> new NaoEncontradoException("Consulta não encontrada."));
+
+		var medicoFound = medicoRepository.findById(request.getIdMedico())
+				.orElseThrow(() -> new NaoEncontradoException("Medico não encontrado."));
+
+
+		var pacienteFound = pacienteRepository.findById(request.getIdPaciente())
+				.orElseThrow(() -> new NaoEncontradoException("Paciente não encontrado."));
+		
+		var consultaMedicoFound = consultaRepository.findByDataConsultaHoraConsultaMedicoIdMedico(
+				request.getDataConsulta(), request.getHoraConsulta(), request.getIdMedico());
+
+		if (consultaMedicoFound.isPresent() && ! consultaMedicoFound.get().getIdConsulta().equals(idConsulta))
+			throw new DataHoraInvalidaException("Horário indisponível para o médico informado.");
+
+		var consultaPacienteFound = consultaRepository.findByDataConsultaHoraConsultaPacienteIdPaciente(
+				request.getDataConsulta(), request.getHoraConsulta(), request.getIdPaciente());
+
+		if (consultaPacienteFound.isPresent() && ! consultaPacienteFound.get().getIdConsulta().equals(idConsulta))
+			throw new DataHoraInvalidaException("Horário indisponível para o paciente informado.");
+		
+		consultaFound.setMedico(medicoFound);
+		consultaFound.setPaciente(pacienteFound);
+		consultaFound.setDataConsulta(request.getDataConsulta());
+		consultaFound.setHoraConsulta(request.getHoraConsulta());
+		consultaFound.setStatus(StatusConsulta.AGENDADA);
+		
+		return createResponse(consultaFound);
+	}
+
 	@Transactional(readOnly = true)
 	public Page<ConsultaResponseDto> consultarPorDataMedico(Long idMedico, LocalDate dataInicio, LocalDate dataFim,
 			Integer page, Integer size) {
@@ -55,8 +99,8 @@ public class ConsultaService {
 
 		var pageable = PageRequest.of(page, size, Sort.by("dataConsulta"));
 
-		var paginaConsultas = consultaRepository.findByDataConsultaBetweenAndMedicoIdMedico(dataInicio, dataFim, idMedico,
-				pageable);
+		var paginaConsultas = consultaRepository.findByDataConsultaBetweenAndMedicoIdMedico(dataInicio, dataFim,
+				idMedico, pageable);
 
 		return paginaConsultas.map(consulta -> {
 			var response = createResponse(consulta);
@@ -91,10 +135,10 @@ public class ConsultaService {
 		var horaAtual = LocalTime.now().withNano(0);
 
 		if (dataAtual.isAfter(request.getDataConsulta()))
-			throw new DataHoraInvalidaException("Data final inválida, selecione uma data futura.");
+			throw new DataHoraInvalidaException("Data inválida: selecione uma data futura.");
 
 		if (dataAtual.isEqual(request.getDataConsulta()) && horaAtual.isAfter(request.getHoraConsulta()))
-			throw new DataHoraInvalidaException("Hora inválida, selecione uma hora futura.");
+			throw new DataHoraInvalidaException("Hora inválida: selecione uma hora futura.");
 
 		var medicoFound = medicoRepository.findById(request.getIdMedico())
 				.orElseThrow(() -> new NaoEncontradoException("Médico não encontrado."));
