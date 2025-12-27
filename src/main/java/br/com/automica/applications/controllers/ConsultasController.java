@@ -33,6 +33,12 @@ public class ConsultasController {
 		var response = consultaService.cadastrarConsulta(request);
 		return ResponseEntity.status(HttpStatus.CREATED.value()).body(response);
 	}
+	
+	@PutMapping("{idConsulta}/finalizar")
+	public ResponseEntity<ConsultaResponseDto> putFinalizar(@PathVariable Long idConsulta) {
+		var response = consultaService.finalizarConsulta(idConsulta);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
 
 	@PutMapping("remarcar/{idConsulta}")
 	public ResponseEntity<ConsultaResponseDto> put(@PathVariable Long idConsulta,
@@ -58,7 +64,7 @@ public class ConsultasController {
 	}
 
 	@PutMapping("{idConsulta}/cancelar")
-	public ResponseEntity<ConsultaResponseDto> put(@PathVariable Long idConsulta) {
+	public ResponseEntity<ConsultaResponseDto> putDesmarcar(@PathVariable Long idConsulta) {
 		var response = consultaService.desmarcarConsulta(idConsulta);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}

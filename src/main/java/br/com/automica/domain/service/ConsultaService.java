@@ -49,9 +49,37 @@ public class ConsultaService {
 	}
 
 	@Transactional
+	public ConsultaResponseDto finalizarConsulta(Long idConsulta) {
+		var consultaFound = consultaRepository.findByIdConsulta(idConsulta)
+				.orElseThrow(() -> new NaoEncontradoException("Consulta não encontrada."));
+		
+		var dataAtual = LocalDate.now();
+		var horaAtual = LocalTime.now().withNano(0);
+		
+		if (consultaFound.getDataConsulta().isAfter(dataAtual))
+			throw new RegraNegocioException("Inválido: não é possível finalizar consulta futura.");
+		
+		if (consultaFound.getDataConsulta().equals(dataAtual) && consultaFound.getHoraConsulta().isAfter(horaAtual))
+			throw new RegraNegocioException("Inválido: não é possível finalizar consulta futura.");
+
+		if (consultaFound.getStatus().equals(StatusConsulta.REALIZADA))
+			throw new RegraNegocioException("Consulta já está finalizada.");
+
+		if (consultaFound.getStatus().equals(StatusConsulta.CANCELADA))
+			throw new RegraNegocioException("Consulta está cancelada.");
+
+		consultaFound.setStatus(StatusConsulta.REALIZADA);
+
+		return createResponse(consultaFound);
+	}
+
+	@Transactional
 	public ConsultaResponseDto desmarcarConsulta(Long idConsulta) {
 		var consultaFound = consultaRepository.findByIdConsulta(idConsulta)
 				.orElseThrow(() -> new NaoEncontradoException("Consulta não encontrada."));
+
+		if (consultaFound.getStatus().equals(StatusConsulta.REALIZADA))
+			throw new RegraNegocioException("Consulta já está finalizada.");
 
 		if (consultaFound.getStatus().equals(StatusConsulta.CANCELADA))
 			throw new RegraNegocioException("Consulta já está cancelada.");
@@ -63,6 +91,7 @@ public class ConsultaService {
 
 	@Transactional
 	public ConsultaResponseDto remarcarConsulta(Long idConsulta, RemarcarConsultaRequestDto request) {
+		
 		var dataAtual = LocalDate.now();
 
 		if (dataAtual.isAfter(request.getDataConsulta()))
@@ -76,9 +105,13 @@ public class ConsultaService {
 		var consultaFound = consultaRepository.findByIdConsulta(idConsulta)
 				.orElseThrow(() -> new NaoEncontradoException("Consulta não encontrada."));
 
+		if (consultaFound.getStatus().equals(StatusConsulta.REALIZADA))
+			throw new RegraNegocioException("Consulta já está finalizada.");
+		
 		if (consultaFound.getMedico().getIdMedico().equals(request.getIdMedico())
 				&& consultaFound.getDataConsulta().equals(request.getDataConsulta())
-				&& consultaFound.getHoraConsulta().equals(request.getHoraConsulta()))
+				&& consultaFound.getHoraConsulta().equals(request.getHoraConsulta())
+				&& consultaFound.getStatus().equals(StatusConsulta.AGENDADA))
 			throw new NaoHaAlteracoesException("Nenhum dado alterado.");
 
 		var medicoFound = medicoRepository.findById(request.getIdMedico())
@@ -102,7 +135,7 @@ public class ConsultaService {
 		consultaFound.setMedico(medicoFound);
 		consultaFound.setPaciente(pacienteFound);
 		consultaFound.setDataConsulta(request.getDataConsulta());
-		consultaFound.setHoraConsulta(request.getHoraConsulta());		
+		consultaFound.setHoraConsulta(request.getHoraConsulta());
 		consultaFound.setStatus(StatusConsulta.AGENDADA);
 
 		return createResponse(consultaFound);

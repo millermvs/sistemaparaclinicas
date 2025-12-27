@@ -25,6 +25,7 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			WHERE c.dataConsulta = :dataConsulta
 			AND c.horaConsulta = :horaConsulta
 			AND c.medico.idMedico = :idMedico
+			ORDER BY c.dataConsulta, horaConsulta
 			""")
 	Optional<Consulta> findByDataConsultaHoraConsultaMedicoIdMedico(@Param("dataConsulta") LocalDate dataConsulta,
 			@Param("horaConsulta") LocalTime horaConsulta, @Param("idMedico") Long idMedico);
@@ -34,6 +35,7 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			WHERE c.dataConsulta = :dataConsulta
 			AND c.horaConsulta = :horaConsulta
 			AND c.paciente.idPaciente = :idPaciente
+			ORDER BY c.dataConsulta, horaConsulta
 			""")
 	Optional<Consulta> findByDataConsultaHoraConsultaPacienteIdPaciente(@Param("dataConsulta") LocalDate dataConsulta,
 			@Param("horaConsulta") LocalTime horaConsulta, @Param("idPaciente") Long idPaciente);
@@ -43,6 +45,7 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			SELECT c FROM Consulta c
 			WHERE c.dataConsulta >= :dataInicio
 			AND c.dataConsulta <= :dataFim
+			ORDER BY c.dataConsulta, horaConsulta
 			""")
 	Page<Consulta> findByDataConsultaBetween(@Param("dataInicio") LocalDate dataInicio,
 			@Param("dataFim") LocalDate dataFim, Pageable pageable);
@@ -53,6 +56,7 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			WHERE c.dataConsulta >= :dataInicio
 			AND c.dataConsulta <= :dataFim
 			AND c.medico.idMedico = :idMedico
+			ORDER BY c.dataConsulta, horaConsulta
 			""")
 	Page<Consulta> findByDataConsultaBetweenAndMedicoIdMedico(@Param("dataInicio") LocalDate dataInicio,
 			@Param("dataFim") LocalDate dataFim, @Param("idMedico") Long idMedico, Pageable pageable);

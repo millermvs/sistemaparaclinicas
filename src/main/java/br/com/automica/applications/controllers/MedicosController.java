@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.automica.domain.dtos.requests.medico.CadastrarMedicoRequestDto;
@@ -35,6 +36,14 @@ public class MedicosController {
 		var response = medicoService.cadastrarMedico(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
+	
+	@GetMapping
+	public ResponseEntity<List<ConsultarMedicoResponseDto>> getByName(@RequestParam String nomeMedico) {
+		var response = medicoService.buscarPorNome(nomeMedico);
+		return ResponseEntity.ok(response);
+	}
+	
+	
 
 	@GetMapping("ativos")
 	public ResponseEntity<List<ConsultarMedicoResponseDto>> getAll() {

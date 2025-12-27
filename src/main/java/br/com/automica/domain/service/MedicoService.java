@@ -24,7 +24,6 @@ import br.com.automica.domain.exceptions.NaoHaAlteracoesException;
 import br.com.automica.infrastructure.repositories.ClinicaRepository;
 import br.com.automica.infrastructure.repositories.MedicoRepository;
 
-
 @Service
 public class MedicoService {
 
@@ -34,13 +33,35 @@ public class MedicoService {
 	@Autowired
 	private ClinicaRepository clinicaRepository;
 
+	public List<ConsultarMedicoResponseDto> buscarPorNome(String nome) {
+
+		var medicoFound = medicoRepository.findByNomeMedicoContainingIgnoreCaseOrderByNomeMedico(nome);
+		
+		if (medicoFound.isEmpty())
+			throw new NaoEncontradoException("Nenhum médico encontrado.");
+		
+		List<ConsultarMedicoResponseDto> listResponse = new ArrayList<ConsultarMedicoResponseDto>();
+
+		for (var medico : medicoFound) {
+			var dtoItem = new ConsultarMedicoResponseDto();
+			dtoItem.setIdMedico(medico.getIdMedico());
+			dtoItem.setNomeMedico(medico.getNomeMedico());
+			dtoItem.setCpfMedico(medico.getCpfMedico());
+			dtoItem.setCrmMedico(medico.getCrmMedico());
+			dtoItem.setWhatsAppMedico(medico.getWhatsAppMedico());
+			listResponse.add(dtoItem);
+		}
+
+		return listResponse;
+	}
+
 	@Transactional
 	public DeletarMedicoResponseDto deletar(Long idMedico) {
 
 		var medicoFound = medicoRepository.findById(idMedico)
 				.orElseThrow(() -> new NaoEncontradoException("Médico não encontrado."));
 
-		medicoFound.setStatusAtivo(false);		
+		medicoFound.setStatusAtivo(false);
 
 		var response = new DeletarMedicoResponseDto();
 		response.setIdMedico(medicoFound.getIdMedico());
@@ -116,7 +137,7 @@ public class MedicoService {
 		var pageable = PageRequest.of(page, size, Sort.by("nomeMedico").ascending());
 
 		var paginaMedicos = medicoRepository.findAtivosByClinicaIdClinica(idClinica, pageable);
-		
+
 		if (paginaMedicos.isEmpty())
 			throw new NaoEncontradoException("Nehum médico encontrado.");
 

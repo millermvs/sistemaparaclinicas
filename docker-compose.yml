@@ -1,0 +1,52 @@
+services:
+  sysagenda_back_api:
+    container_name: springboot-sysagenda_back
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - sysagenda-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_sysagenda
+      SPRING_DATASOURCE_USERNAME: sysagenda
+      SPRING_DATASOURCE_PASSWORD: Bh@scara
+      # Hibernate crie/atualize as colunas/tabelas:
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      # Log mais verboso para ver o SQL gerado
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      TZ: America/Sao_Paulo
+
+  postgres:
+    image: postgres:16
+    container_name: postgres-db_sysagenda
+    restart: always
+    environment:
+      POSTGRES_DB: db_sysagenda
+      POSTGRES_USER: sysagenda
+      POSTGRES_PASSWORD: Bh@scara
+      TZ: America/Sao_Paulo
+    ports:
+      - "5432:5432"
+    networks:
+      - sysagenda-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sysagenda -d db_sysagenda -h 127.0.0.1 -p 5432"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+networks:
+  sysagenda-network:
+
+volumes:
+  postgres_data:

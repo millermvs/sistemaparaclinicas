@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,10 +25,12 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "medicos")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Medico {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@EqualsAndHashCode.Include
 	private Long idMedico;
 	
 	@Column(nullable = false, length = 100)

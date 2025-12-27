@@ -20,6 +20,8 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
 	Optional<Medico> findByCpfMedico(String cpfMedico);
 
 	Optional<Medico> findByCrmMedico(String crmMedico);
+	
+	List<Medico> findByNomeMedicoContainingIgnoreCaseOrderByNomeMedico(String nome);
 
 	@Query("""
 			SELECT m FROM Medico m
