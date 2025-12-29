@@ -2,6 +2,7 @@ package br.com.automica.infrastructure.repositories;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -13,9 +14,22 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import br.com.automica.domain.entities.Consulta;
+import br.com.automica.domain.projections.ConsultasPorMedicoProjection;
 
 @Repository
 public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
+
+	@Query("""
+			    SELECT c.medico.idMedico AS idMedico,
+			           c.medico.nomeMedico AS nomeMedico,
+			           COUNT(c.idConsulta) AS quantidade
+			    FROM Consulta c
+			    WHERE c.dataConsulta BETWEEN :dataInicial AND :dataFinal
+			    GROUP BY c.medico.idMedico, c.medico.nomeMedico
+			    ORDER BY COUNT(c.idConsulta) DESC
+			""")
+	List<ConsultasPorMedicoProjection> countConsultasPorMedicoNoPeriodo(@Param("dataInicial") LocalDate dataInicial,
+			@Param("dataFinal") LocalDate dataFinal);
 
 	@EntityGraph(attributePaths = { "medico", "paciente" })
 	Optional<Consulta> findByIdConsulta(Long id);

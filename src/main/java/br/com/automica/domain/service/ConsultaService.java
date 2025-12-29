@@ -2,6 +2,8 @@ package br.com.automica.domain.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.automica.domain.dtos.requests.consulta.CadastrarConsultaRequestDto;
 import br.com.automica.domain.dtos.requests.consulta.RemarcarConsultaRequestDto;
 import br.com.automica.domain.dtos.responses.consulta.ConsultaResponseDto;
+import br.com.automica.domain.dtos.responses.consulta.QuantidadeConsultasPorMedicoResponseDto;
 import br.com.automica.domain.entities.Consulta;
 import br.com.automica.domain.enums.StatusConsulta;
 import br.com.automica.domain.exceptions.NaoEncontradoException;
@@ -48,17 +51,33 @@ public class ConsultaService {
 		return response;
 	}
 
+	@Transactional(readOnly = true)
+	public List<QuantidadeConsultasPorMedicoResponseDto> buscarQuantidadePorMedico(LocalDate dataInicial,
+			LocalDate dataFinal) {
+		var resumo = consultaRepository.countConsultasPorMedicoNoPeriodo(dataInicial, dataFinal);
+
+		List<QuantidadeConsultasPorMedicoResponseDto> response = new ArrayList<QuantidadeConsultasPorMedicoResponseDto>();
+
+		for (var medicoResumo : resumo) {
+			var dtoItem = new QuantidadeConsultasPorMedicoResponseDto();
+			dtoItem.setNomeMedico(medicoResumo.getNomeMedico());
+			dtoItem.setQuantidadeConsultas(medicoResumo.getQuantidade());
+			response.add(dtoItem);
+		}
+		return response;
+	}
+
 	@Transactional
 	public ConsultaResponseDto finalizarConsulta(Long idConsulta) {
 		var consultaFound = consultaRepository.findByIdConsulta(idConsulta)
 				.orElseThrow(() -> new NaoEncontradoException("Consulta não encontrada."));
-		
+
 		var dataAtual = LocalDate.now();
 		var horaAtual = LocalTime.now().withNano(0);
-		
+
 		if (consultaFound.getDataConsulta().isAfter(dataAtual))
 			throw new RegraNegocioException("Inválido: não é possível finalizar consulta futura.");
-		
+
 		if (consultaFound.getDataConsulta().equals(dataAtual) && consultaFound.getHoraConsulta().isAfter(horaAtual))
 			throw new RegraNegocioException("Inválido: não é possível finalizar consulta futura.");
 
@@ -91,7 +110,7 @@ public class ConsultaService {
 
 	@Transactional
 	public ConsultaResponseDto remarcarConsulta(Long idConsulta, RemarcarConsultaRequestDto request) {
-		
+
 		var dataAtual = LocalDate.now();
 
 		if (dataAtual.isAfter(request.getDataConsulta()))
@@ -107,7 +126,7 @@ public class ConsultaService {
 
 		if (consultaFound.getStatus().equals(StatusConsulta.REALIZADA))
 			throw new RegraNegocioException("Consulta já está finalizada.");
-		
+
 		if (consultaFound.getMedico().getIdMedico().equals(request.getIdMedico())
 				&& consultaFound.getDataConsulta().equals(request.getDataConsulta())
 				&& consultaFound.getHoraConsulta().equals(request.getHoraConsulta())

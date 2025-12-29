@@ -1,6 +1,7 @@
 package br.com.automica.applications.controllers;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.automica.domain.dtos.requests.consulta.CadastrarConsultaRequestDto;
 import br.com.automica.domain.dtos.requests.consulta.RemarcarConsultaRequestDto;
 import br.com.automica.domain.dtos.responses.consulta.ConsultaResponseDto;
+import br.com.automica.domain.dtos.responses.consulta.QuantidadeConsultasPorMedicoResponseDto;
 import br.com.automica.domain.service.ConsultaService;
 import jakarta.validation.Valid;
 
@@ -28,12 +30,19 @@ public class ConsultasController {
 	@Autowired
 	private ConsultaService consultaService;
 
+	@GetMapping("medicos/resumo/{dataInicial}/{dataFinal}")
+	public ResponseEntity<List<QuantidadeConsultasPorMedicoResponseDto>> getQuantidadeConsultasPorMedico(
+			@PathVariable LocalDate dataInicial, @PathVariable LocalDate dataFinal) {
+		var response = consultaService.buscarQuantidadePorMedico(dataInicial, dataFinal);
+		return ResponseEntity.ok(response);
+	}
+
 	@PostMapping("agendar")
 	public ResponseEntity<ConsultaResponseDto> post(@Valid @RequestBody CadastrarConsultaRequestDto request) {
 		var response = consultaService.cadastrarConsulta(request);
 		return ResponseEntity.status(HttpStatus.CREATED.value()).body(response);
 	}
-	
+
 	@PutMapping("{idConsulta}/finalizar")
 	public ResponseEntity<ConsultaResponseDto> putFinalizar(@PathVariable Long idConsulta) {
 		var response = consultaService.finalizarConsulta(idConsulta);

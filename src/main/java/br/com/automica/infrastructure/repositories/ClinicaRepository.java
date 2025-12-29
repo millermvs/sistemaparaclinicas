@@ -11,4 +11,5 @@ import br.com.automica.domain.entities.Clinica;
 public interface ClinicaRepository extends JpaRepository<Clinica, Long> {
 
 	Optional<Clinica> findByCnpjClinica(String cnpjClinica);
+
 }
