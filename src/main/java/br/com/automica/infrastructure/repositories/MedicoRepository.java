@@ -33,8 +33,7 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
 	@Query("""
 			SELECT m FROM Medico m
 			WHERE m.clinica.idClinica = :idClinica
-			AND m.statusAtivo = true
-			ORDER BY nomeMedico
+			ORDER BY m.statusAtivo DESC
 			""")
 	Page<Medico> findAtivosByClinicaIdClinica(@Param("idClinica") Long idClinica, Pageable pageable);
 

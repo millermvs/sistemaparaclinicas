@@ -36,10 +36,10 @@ public class MedicoService {
 	public List<ConsultarMedicoResponseDto> buscarPorNome(String nome) {
 
 		var medicoFound = medicoRepository.findByNomeMedicoContainingIgnoreCaseOrderByNomeMedico(nome);
-		
+
 		if (medicoFound.isEmpty())
 			throw new NaoEncontradoException("Nenhum médico encontrado.");
-		
+
 		List<ConsultarMedicoResponseDto> listResponse = new ArrayList<ConsultarMedicoResponseDto>();
 
 		for (var medico : medicoFound) {
@@ -61,7 +61,11 @@ public class MedicoService {
 		var medicoFound = medicoRepository.findById(idMedico)
 				.orElseThrow(() -> new NaoEncontradoException("Médico não encontrado."));
 
-		medicoFound.setStatusAtivo(false);
+		if (medicoFound.getStatusAtivo().equals(true)) {
+			medicoFound.setStatusAtivo(false);
+		} else {
+			medicoFound.setStatusAtivo(true);
+		}
 
 		var response = new DeletarMedicoResponseDto();
 		response.setIdMedico(medicoFound.getIdMedico());
@@ -148,6 +152,7 @@ public class MedicoService {
 			dtoItem.setCpfMedico(medico.getCpfMedico());
 			dtoItem.setCrmMedico(medico.getCrmMedico());
 			dtoItem.setWhatsAppMedico(medico.getWhatsAppMedico());
+			dtoItem.setStatusAtivo(medico.getStatusAtivo());
 			return dtoItem;
 		});
 	}

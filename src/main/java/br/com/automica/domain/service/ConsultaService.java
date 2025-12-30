@@ -104,6 +104,7 @@ public class ConsultaService {
 			throw new RegraNegocioException("Consulta já está cancelada.");
 
 		consultaFound.setStatus(StatusConsulta.CANCELADA);
+		consultaFound.setHoraConsulta(LocalTime.MIDNIGHT);
 
 		return createResponse(consultaFound);
 	}
@@ -221,7 +222,7 @@ public class ConsultaService {
 		var consultaFoundMedico = consultaRepository.findByDataConsultaHoraConsultaMedicoIdMedico(
 				request.getDataConsulta(), request.getHoraConsulta(), request.getIdMedico());
 
-		if (consultaFoundMedico.isPresent())
+		if (consultaFoundMedico.isPresent() && consultaFoundMedico.get().getStatus().equals(StatusConsulta.AGENDADA))
 			throw new RegraNegocioException("Horário indisponível para o médico informado.");
 
 		var consultaFoundPaciente = consultaRepository.findByDataConsultaHoraConsultaPacienteIdPaciente(

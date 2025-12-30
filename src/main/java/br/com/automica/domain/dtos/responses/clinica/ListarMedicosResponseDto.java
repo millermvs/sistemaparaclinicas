@@ -12,5 +12,6 @@ public class ListarMedicosResponseDto {
 	private String cpfMedico;
 	private String crmMedico;
 	private String whatsAppMedico;
+	private Boolean statusAtivo;
 	
 }
