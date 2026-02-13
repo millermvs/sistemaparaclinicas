@@ -43,6 +43,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(RegraNegocioException.class)
 	public ResponseEntity<Object> handlerRegraNegocio(RegraNegocioException ex) {
-		return createResponse(HttpStatus.UNPROCESSABLE_CONTENT, ex);
+		return createResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex);
 	}
 }

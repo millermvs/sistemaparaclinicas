@@ -2,6 +2,7 @@ package br.com.automica.domain.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -204,8 +205,8 @@ public class ConsultaService {
 	@Transactional
 	public ConsultaResponseDto cadastrarConsulta(CadastrarConsultaRequestDto request) {
 
-		var dataAtual = LocalDate.now();
-		var horaAtual = LocalTime.now().withNano(0);
+		var dataAtual = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
+		var horaAtual = LocalTime.now(ZoneId.of("America/Sao_Paulo")).withNano(0);
 
 		if (dataAtual.isAfter(request.getDataConsulta()))
 			throw new RegraNegocioException("Data inválida: selecione uma data futura.");

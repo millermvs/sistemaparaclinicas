@@ -1,18 +1,24 @@
-# Instalando uma imagem do JDK 21
-FROM eclipse-temurin:21-jdk
+# ---------- STAGE 1: build ----------
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
-# Criando uma pasta para onde o docker irá copiar os arquivos do projeto
+WORKDIR /build
+
+# Copia só o pom primeiro pra aproveitar cache de dependências
+COPY pom.xml .
+RUN mvn -q dependency:go-offline
+
+# Agora copia o código e builda
+COPY src ./src
+RUN mvn -q clean package -DskipTests
+
+# ---------- STAGE 2: runtime ----------
+FROM eclipse-temurin:21-jre
+
 WORKDIR /app
 
-# Copiando todos os arquivos do projeto para dentro desta pasta
-COPY . /app
+# Copia o jar gerado no build
+COPY --from=builder /build/target/*.jar app.jar
 
-# Comando para fazer o DEPLOY do projeto
-RUN chmod +x mvnw
-RUN ./mvnw -B clean package -DskipTests
-
-# Porta em que o projeto será executado
 EXPOSE 8080
 
-# Script para executar o projeto
-CMD ["java", "-jar", "target/sitemaControleAgendamentos-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
